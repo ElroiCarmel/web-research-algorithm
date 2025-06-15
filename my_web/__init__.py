@@ -1,5 +1,9 @@
+import os
+import dotenv
 from flask import Flask
 
+dotenv.load_dotenv()
+
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "6cabbd73a8c87af79fe9dee6e92d9305"
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY")
 from my_web import route
