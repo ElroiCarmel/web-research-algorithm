@@ -1,0 +1,38 @@
+{% extends "layout.html" %} {% block content %}
+<h1 class="text-center">Maximally-Proportional Allocation</h1>
+
+<p>
+  This algorithm tries to divide a set of indivisible items among <em>n</em>
+  agents as “fairly” as possible in the following sense:
+</p>
+
+<ol>
+  <li>
+    <strong>Proportional share first.</strong> Each agent should, if possible,
+    receive a bundle they value at least <code>1/n</code> of their total value
+    over all items. <br />
+    <u>For example:</u> Given 2 agents and total valuation of 100 each, each agent should get a bundle
+    which he values at least 50.
+  </li>
+
+  <li>
+    <strong>Maximise how many agents achieve that.</strong> Among all
+    allocations, pick one that satisfies the largest number of agents with a
+    proportional bundle.
+  </li>
+
+  <li>
+    <strong>Then maximise the worst satisfied agent’s happiness.</strong>
+    Within that set, choose an allocation that makes the least-happy
+    proportional agent as happy as possible (formally: maximise the minimum rank
+    any satisfied agent assigns to their own bundle).
+  </li>
+</ol>
+
+<p>
+  The result is one Pareto-optimal allocation meeting those three criteria.
+  Pareto-optimal in a sense that there is no other allocation that benfeits at
+  least one agent without harming any other agent.
+</p>
+
+{% endblock content %}

@@ -1,0 +1,35 @@
+{% extends "layout.html" %} {% block content %}
+<h2 class="mt-2 text-center">Input Instance</h2>
+<div style="white-space: pre-wrap; border: 1px solid #ccc; padding: 5px">
+  {{ instance }}
+</div>
+<h2 class="mt-2 text-center">Allocation</h2>
+<table class="table table-bordered table-striped align-middle">
+  <thead class="table-primary">
+    <tr>
+      <th scope="col">Agent</th>
+      <th scope="col">Items received</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for agent, items in alloc.items() %}
+    <tr>
+      <td class="fw-semibold">{{ agent }}</td>
+
+      <!-- show badges for each item, or a muted dash if none -->
+      <td>
+        {% if items %} {% for it in items %}
+        <span class="badge bg-secondary me-1">{{ it }}</span>
+        {% endfor %} {% else %}
+        <span class="text-muted">— none —</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h2 class="mt-2 text-center">Logs</h2>
+<textarea class="form-control mb-3" style="height: 300px" readonly>
+  {{ logs }}
+</textarea>
+{% endblock %}

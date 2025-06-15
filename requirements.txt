@@ -1,0 +1,5 @@
+flask
+flask-wtf
+wtforms
+dotenv
+git+https://github.com/ElroiCarmel/fairpyx.git@main#egg=fairpyx

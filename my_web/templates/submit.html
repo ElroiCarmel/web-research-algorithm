@@ -1,0 +1,49 @@
+{% extends "layout.html" %} {% block content %}
+<p>Fill the valuation in JSON format.</p>
+<p>You may use various input formats:</p>
+<ul>
+  <li>
+    For each agent state the item and the value:
+    <p>
+      <code>
+        {"Ami": {"green": 8, "red":7, "blue": 6, "yellow": 5}, <br />
+        "Tami": {"green": 12, "red":8, "blue": 4, "yellow": 2}}
+      </code>
+    </p>
+  </li>
+
+  <li>
+    For each agent state the list of values:
+    <p>
+      <code> {"Ami": [8,7,6,5], "Tami": [12,8,4,2]} </code>
+    </p>
+  </li>
+
+  <li>
+    Only specify the value matrix:
+    <p>
+      <code> [[8,7,6,5], [12,8,4,2]] </code>
+    </p>
+  </li>
+</ul>
+<form method="POST" action="">
+  {{ form.hidden_tag() }}
+  <fieldset class="form-group">
+    <legend class="border-bottom mb-4">Valuation</legend>
+  </fieldset>
+  {{ form.valuation(class="form-control", style="height: 200px") }}
+  <br />
+
+  <div class="row justify-content-start">
+    <!-- Submit Button -->
+    <div class="col">
+      {{ form.submit(class="btn btn-primary form-control-lg mb-3") }}
+
+      <!-- Fill Random Button -->
+
+      {{ form.fill_random(class="btn btn-secondary form-control-lg mb-3") }}
+    </div>
+  </div>
+</form>
+
+{% endblock %}
