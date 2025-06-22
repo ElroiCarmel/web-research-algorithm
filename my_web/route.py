@@ -3,10 +3,10 @@ import logging
 import random
 from flask import render_template, flash, redirect, url_for, request
 from my_web import app
-from my_web.forms import ValuationForm
+from my_web.forms import ValuationForm, FillRandomForm
 from io import StringIO
 from fairpyx import Instance, divide
-from fairpyx.algorithms import maximally_proportional_allocation
+from fairpyx.algorithms.maximally_proportional import maximally_proportional_allocation
 from fairpyx.algorithms.maximally_proportional import logger
 
 
@@ -18,45 +18,63 @@ def index():
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
     form = ValuationForm()
-    if form.validate_on_submit():
-        if form.fill_random.data:
-            kids = ["Alice", "Bob", "Charlie"]
-            gifts = ["Board Game", "Headphones", "Sketchbook"]
-            rand_example = {
-                agent: {item: random.randint(20, 60) for item in gifts}
-                for agent in kids
-            }
-            form.valuation.data = json.dumps(rand_example, indent=2)
-            return render_template("submit.html", form=form)
-        elif form.submit.data and form.validate_on_submit():
-            try:
-                valuation = json.loads(form.valuation.data)
-            except json.decoder.JSONDecodeError as e:
-                flash(f"Invalid input format! See examples. {e}", category="danger")
-                return redirect(url_for("submit"))
-            else:
-                instance = Instance(valuations=valuation)
-                # Custom the logger
-                log_stream = StringIO()
-                log_handler = logging.StreamHandler(log_stream)
-                logger.addHandler(log_handler)
-                log_handler.setFormatter(
-                    logging.Formatter(fmt="{levelname} - {message}", style="{")
-                )
-                logger.setLevel(logging.DEBUG)
+    fill_rand_form = FillRandomForm()
 
-                alloc = divide(maximally_proportional_allocation, instance)
+    if fill_rand_form.validate_on_submit():
+        nagents, nitems = fill_rand_form.num_agents.data, fill_rand_form.num_items.data
+        rand_instance = Instance.random_uniform(
+            num_of_agents=nagents,
+            num_of_items=nitems,
+            item_capacity_bounds=(1, 1),
+            agent_capacity_bounds=(nitems, nitems),
+            item_base_value_bounds=(50, 100),
+            item_subjective_ratio_bounds=(0.2, 2.0),
+            normalized_sum_of_values=100,
+        )
+        form.valuation.data = str(rand_instance._valuations).replace("'", '"')
+        return render_template("submit.html", form=form, fill_rand_form=fill_rand_form)
+    elif form.validate_on_submit():
+        try:
+            valuation = json.loads(form.valuation.data)
+        except json.decoder.JSONDecodeError as e:
+            flash(f"Invalid input format! See examples. {e}", category="danger")
+            return redirect(url_for("submit"))
+        else:
+            instance = Instance(valuations=valuation)
+            # Custom the logger
+            log_stream = StringIO()
+            log_handler = logging.StreamHandler(log_stream)
+            logger.addHandler(log_handler)
+            log_handler.setFormatter(
+                logging.Formatter(fmt="{levelname} - {message}", style="{")
+            )
+            logger.setLevel(logging.DEBUG)
 
-                logger.removeHandler(log_handler)
-                logs = log_stream.getvalue()
+            alloc = divide(maximally_proportional_allocation, instance)
 
-                return render_template(
-                    "allocation.html",
-                    alloc=alloc,
-                    instance=instance_str(instance),
-                    logs=logs,
-                )
-    return render_template("submit.html", form=form)
+            logger.removeHandler(log_handler)
+            logs = log_stream.getvalue()
+            score_by_agent = {}
+            for agent, bundle in alloc.items():
+                bundle_value = instance.agent_bundle_value(agent, bundle)
+                agent_total_value = instance.agent_bundle_value(agent, instance.items)
+                score_by_agent[agent] = {
+                    "bundle_value": bundle_value,
+                    "proportional_value": round(bundle_value / agent_total_value,4),
+                    "threshold": round(agent_total_value / instance.num_of_agents, 4),
+                    "prop_threshold": round(1 / instance.num_of_agents, 4),
+                    
+                }
+            print("alloc:", alloc)
+            print("score_by_agent:", score_by_agent)
+            return render_template(
+                "allocation.html",
+                alloc=alloc,
+                score=score_by_agent,
+                instance=instance_str(instance),
+                logs=logs,
+            )
+    return render_template("submit.html", form=form, fill_rand_form=fill_rand_form)
 
 
 @app.route("/about")

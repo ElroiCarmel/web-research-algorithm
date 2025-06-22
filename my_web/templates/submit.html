@@ -38,12 +38,18 @@
     <!-- Submit Button -->
     <div class="col">
       {{ form.submit(class="btn btn-primary form-control-lg mb-3") }}
-
+      </form>
+      <form method="POST", action="">
       <!-- Fill Random Button -->
-
-      {{ form.fill_random(class="btn btn-secondary form-control-lg mb-3") }}
+      {{ fill_rand_form.hidden_tag() }}
+      {{ fill_rand_form.fr_submit(class="btn btn-secondary form-control-lg mb-3")}}
+      {{ fill_rand_form.num_agents.label}}
+      {{ fill_rand_form.num_agents }}
+      {{ fill_rand_form.num_items.label}}
+      {{ fill_rand_form.num_items }}
+      </form>
     </div>
   </div>
-</form>
+
 
 {% endblock %}

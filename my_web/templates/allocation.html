@@ -9,6 +9,10 @@
     <tr>
       <th scope="col">Agent</th>
       <th scope="col">Items received</th>
+      <th scope="col">Bundle Value</th>
+      <th scope="col">Minimum Bundle Value</th>
+      <th scope="col">Bundle Proportional Value</th>
+      <th scope="col">Minimum Proportional Value</th>
     </tr>
   </thead>
   <tbody>
@@ -23,6 +27,18 @@
         {% endfor %} {% else %}
         <span class="text-muted">— none —</span>
         {% endif %}
+      </td>
+      <td>
+        {{ score[agent].bundle_value }}
+      </td>
+      <td>
+        {{ score[agent].threshold }}
+      </td>
+      <td>
+        {{ score[agent].proportional_value }}
+      </td>
+      <td>
+        {{ score[agent].prop_threshold }}
       </td>
     </tr>
     {% endfor %}
