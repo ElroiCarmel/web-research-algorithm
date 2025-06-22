@@ -28,22 +28,22 @@
         <span class="text-muted">— none —</span>
         {% endif %}
       </td>
-      <td>
-        {{ score[agent].bundle_value }}
-      </td>
-      <td>
-        {{ score[agent].threshold }}
-      </td>
-      <td>
-        {{ score[agent].proportional_value }}
-      </td>
-      <td>
-        {{ score[agent].prop_threshold }}
-      </td>
+      <td>{{ score[agent].bundle_value }}</td>
+      <td>{{ score[agent].threshold }}</td>
+      <td>{{ score[agent].proportional_value }}</td>
+      <td>{{ score[agent].prop_threshold }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+{% if items_not_given %}
+<h3>Unallocated Items</h3>
+{% for it in items_not_given %}
+<span class="badge bg-secondary me-1">{{ it }}</span>
+{% endfor %}
+<p class="content-section">The above items were not designated for any agent. They were not necessary to achieve
+  proprtional allocation with minimal bundles.</p>
+{% endif %}
 <h2 class="mt-2 text-center">Logs</h2>
 <textarea class="form-control mb-3" style="height: 300px" readonly>
   {{ logs }}

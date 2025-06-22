@@ -8,6 +8,7 @@ from io import StringIO
 from fairpyx import Instance, divide
 from fairpyx.algorithms.maximally_proportional import maximally_proportional_allocation
 from fairpyx.algorithms.maximally_proportional import logger
+from functools import reduce
 
 
 @app.route("/")
@@ -60,19 +61,20 @@ def submit():
                 agent_total_value = instance.agent_bundle_value(agent, instance.items)
                 score_by_agent[agent] = {
                     "bundle_value": bundle_value,
-                    "proportional_value": round(bundle_value / agent_total_value,4),
+                    "proportional_value": round(bundle_value / agent_total_value, 4),
                     "threshold": round(agent_total_value / instance.num_of_agents, 4),
                     "prop_threshold": round(1 / instance.num_of_agents, 4),
-                    
                 }
-            print("alloc:", alloc)
-            print("score_by_agent:", score_by_agent)
+            items_given = reduce(set.union, alloc.values(), set())
+            items = set(instance.items)
+            items_not_given = items - items_given
             return render_template(
                 "allocation.html",
                 alloc=alloc,
                 score=score_by_agent,
                 instance=instance_str(instance),
                 logs=logs,
+                items_not_given=items_not_given
             )
     return render_template("submit.html", form=form, fill_rand_form=fill_rand_form)
 
