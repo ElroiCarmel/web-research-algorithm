@@ -1,0 +1,12 @@
+# Things that should NOT be copied into the image (step 5 "COPY . .").
+# Keeps the image small and avoids leaking secrets.
+.git
+.gitignore
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+Dockerfile
+.dockerignore
+README.md
